@@ -128,23 +128,22 @@ export function registerShadowGameHandlers(io: Server, socket: Socket) {
         const aliveInfiltrator = alivePlayers.find(p => p.role === 'INFILTRATOR');
         const aliveSpy = alivePlayers.find(p => p.role === 'SPY');
         const aliveCitizens = alivePlayers.filter(p => p.role === 'CITIZEN');
-        // Agents are citizens in Spy mode effectively, but role is 'AGENT'
         const aliveAgents = alivePlayers.filter(p => p.role === 'AGENT');
 
         // INFILTRATOR MODE Logic
-        if (aliveInfiltrator || aliveCitizens.length > 0) {
-            // Infiltrator Eliminated
-            if (!aliveInfiltrator && !aliveSpy) {
-                // Check if it was Infiltrator Game
-                if (players.some(p => p.role === 'INFILTRATOR' || p.role === 'CITIZEN')) {
-                    room.winner = 'CITIZEN';
-                    room.phase = 'GAME_OVER';
-                    io.to(room.id).emit('game_over', { winner: 'CITIZENS', message: 'The Infiltrator has been eliminated!' });
-                    return true;
-                }
+        if (players.some(p => p.role === 'INFILTRATOR')) {
+            // Infiltrator Eliminated -> Citizens Win
+            if (!aliveInfiltrator) {
+                room.winner = 'CITIZEN';
+                room.phase = 'GAME_OVER';
+                // Emit singular 'CITIZEN' so frontend logic (winner === 'CITIZEN') matches.
+                // Frontend appends 'S', so 'CITIZENS WIN'.
+                io.to(room.id).emit('game_over', { winner: 'CITIZEN', message: 'The Infiltrator has been eliminated!' });
+                return true;
             }
 
-            // 1 vs 1 Logic for INFILTRATOR
+            // 1 vs 1 Logic -> Infiltrator Wins
+            // If Infiltrator is alive and only 1 (or 0) Citizen remains (Total <= 2)
             if (aliveInfiltrator && aliveCitizens.length <= 1) {
                 room.winner = 'INFILTRATOR';
                 room.phase = 'GAME_OVER';
@@ -154,16 +153,17 @@ export function registerShadowGameHandlers(io: Server, socket: Socket) {
         }
 
         // SPY MODE Logic
-        if (aliveSpy || aliveAgents.length > 0) {
-            // Spy Eliminated
+        if (players.some(p => p.role === 'SPY')) {
+            // Spy Eliminated -> Agents Win
             if (!aliveSpy) {
-                room.winner = 'AGENT'; // Using generic naming or CITIZEN? Let's use AGENT
+                room.winner = 'AGENT';
                 room.phase = 'GAME_OVER';
-                io.to(room.id).emit('game_over', { winner: 'AGENTS', message: 'The Spy has been eliminated!' });
+                io.to(room.id).emit('game_over', { winner: 'AGENT', message: 'The Spy has been eliminated!' });
                 return true;
             }
 
-            // 1 vs 1 Logic for SPY (Spy + 1 Agent = Spy Wins)
+            // 1 vs 1 Logic -> Spy Wins
+            // If Spy is alive and only 1 Agent remains (Total <= 2)
             if (aliveSpy && aliveAgents.length <= 1) {
                 room.winner = 'SPY';
                 room.phase = 'GAME_OVER';

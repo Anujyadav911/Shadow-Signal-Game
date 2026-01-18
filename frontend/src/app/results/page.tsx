@@ -23,7 +23,7 @@ export default function ResultsPage() {
         (room.winner === 'INFILTRATOR' && player.role === 'INFILTRATOR');
 
     return (
-        <div className="flex flex-col items-center w-full min-h-[50vh] justify-center">
+        <div className="flex flex-col items-center w-full gap-8">
             <motion.div
                 initial={{ scale: 0.5, opacity: 0 }}
                 animate={{ scale: 1, opacity: 1 }}

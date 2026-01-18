@@ -12,6 +12,12 @@ body {
   color: rgb(var(--foreground-rgb));
   background: black;
   font-family: var(--font-outfit), sans-serif;
+  height: 100%;
+  margin: 0;
+}
+
+html {
+  height: 100%;
 }
 
 h1,

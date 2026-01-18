@@ -78,7 +78,7 @@ export default function GamePage() {
     };
 
     return (
-        <div className="w-full relative min-h-[80vh] flex flex-col">
+        <div className="w-full relative flex flex-col gap-6">
             {/* Header */}
             <div className="flex justify-between items-center mb-6">
                 <div className="flex flex-col">

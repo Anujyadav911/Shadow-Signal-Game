@@ -21,11 +21,13 @@ export default function RootLayout({
         <html lang="en">
             <body className={`${inter.variable} ${outfit.variable} ${cinzel.variable} font-sans bg-black text-gray-100 min-h-screen selection:bg-indigo-500/30`}>
                 <ShadowSocketProvider>
-                    <main className="min-h-screen flex flex-col items-center justify-center p-4 bg-black">
-                        <div className="w-full max-w-md w-full relative z-10">
+                    <div className="min-h-screen w-full flex flex-col items-center justify-center bg-black p-4 sm:p-6 lg:p-8">
+                        <main className="w-full max-w-[600px] flex flex-col items-center gap-6 relative z-10">
                             {children}
-                        </div>
-                    </main>
+                        </main>
+
+                        {/* Global Background Elements or Overlay could go here */}
+                    </div>
                 </ShadowSocketProvider>
             </body>
         </html>

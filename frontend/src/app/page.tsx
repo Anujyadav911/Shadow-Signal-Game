@@ -30,10 +30,10 @@ export default function LandingPage() {
     };
 
     return (
-        <main className="relative w-full h-screen overflow-hidden bg-black flex flex-col items-center justify-center gap-16 py-10">
+        <div className="w-full flex flex-col items-center gap-12">
 
             {/* Main Content */}
-            <div className="relative z-20 w-full max-w-4xl flex flex-col items-center justify-center min-h-[600px]">
+            <div className="w-full flex flex-col items-center justify-center">
 
                 {/* Title Section */}
                 <div className="text-center flex flex-col items-center">
@@ -47,7 +47,7 @@ export default function LandingPage() {
 
                 {/* Error Message */}
                 {error && (
-                    <div className="absolute top-1/2 -translate-y-1/2 z-50 bg-rose-900/80 backdrop-blur-md border border-rose-500/50 text-rose-100 px-6 py-3 rounded-lg shadow-xl flex items-center gap-4">
+                    <div className="bg-rose-900/80 backdrop-blur-md border border-rose-500/50 text-rose-100 px-6 py-3 rounded-lg shadow-xl flex items-center gap-4 mb-8">
                         <span>{error}</span>
                         <button onClick={clearError} className="hover:text-white font-bold">&times;</button>
                     </div>
@@ -148,6 +148,6 @@ export default function LandingPage() {
                     )}
                 </div>
             </div>
-        </main >
+        </div>
     );
 }

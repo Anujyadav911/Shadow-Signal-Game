@@ -24,27 +24,31 @@ export default function LobbyPage() {
     if (!room || !player) return null;
 
     return (
-        <div className="w-full">
-            <div className="mb-8 text-center">
-                <p className="text-gray-400 text-sm uppercase tracking-widest font-bold mb-2">ROOM CODE</p>
-                <div className="text-5xl font-black text-white font-mono bg-white/5 inline-block px-6 py-2 rounded-xl border-2 border-dashed border-white/10 tracking-[0.2em] relative group cursor-pointer hover:border-indigo-500/50 transition-colors"
+        <div className="w-full flex flex-col gap-6">
+            <div className="text-center">
+                <p className="text-gray-400 text-xs uppercase tracking-[0.2em] font-bold mb-3">ROOM CODE</p>
+                <div
+                    className="text-5xl md:text-6xl font-black text-white font-mono bg-white/5 inline-block px-8 py-4 rounded-2xl border-2 border-dashed border-white/10 tracking-[0.15em] relative group cursor-pointer hover:border-indigo-500/50 transition-all hover:bg-white/10 hover:scale-105 active:scale-95"
                     onClick={() => {
                         navigator.clipboard.writeText(room.id);
                         // could show toast
                     }}
                 >
                     {room.id}
-                    <span className="absolute -bottom-6 left-1/2 -translate-x-1/2 text-[10px] text-gray-500 opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">Click to copy</span>
+                    <span className="absolute -bottom-8 left-1/2 -translate-x-1/2 text-[10px] text-gray-500 opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap bg-black/80 px-2 py-1 rounded">Click to copy</span>
                 </div>
             </div>
 
-            <div className="bg-gray-900/50 backdrop-blur-xl border border-white/5 rounded-2xl p-6 shadow-2xl">
-                <div className="flex justify-between items-center mb-6">
-                    <h2 className="text-xl font-bold text-white flex items-center">
-                        <span className="w-2 h-2 rounded-full bg-green-500 mr-2 animate-pulse"></span>
+            <div className="bg-gray-900/40 backdrop-blur-xl border border-white/10 rounded-3xl p-6 sm:p-8 shadow-2xl w-full">
+                <div className="flex justify-between items-center mb-6 pb-4 border-b border-white/5">
+                    <h2 className="text-lg font-bold text-white flex items-center gap-3">
+                        <span className="relative flex h-3 w-3">
+                            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+                            <span className="relative inline-flex rounded-full h-3 w-3 bg-green-500"></span>
+                        </span>
                         Waiting for players
                     </h2>
-                    <span className="bg-indigo-600/20 text-indigo-300 font-bold px-3 py-1 rounded-full text-xs">
+                    <span className="bg-white/5 text-gray-300 font-mono font-bold px-3 py-1 rounded-full text-xs border border-white/10">
                         {room.players.length} / 12
                     </span>
                 </div>

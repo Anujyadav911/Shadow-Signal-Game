@@ -11,24 +11,40 @@ export function generateRoomCode(): string {
     return Math.floor(100000 + Math.random() * 900000).toString();
 }
 
+// Update to return generic pair
 export function getRandomWordPair() {
     const domain = wordsData.domains[Math.floor(Math.random() * wordsData.domains.length)];
     const wordObj = domain.words[Math.floor(Math.random() * domain.words.length)];
+
+    // For Infiltrator mode: infiltrator gets nothing.
+    // For Spy mode: Spy gets 'similar' word. 
+    // Simplified: Spy gets the SAME word for now or a dummy "similar" word if we had a pair DB.
+    // The prompt says: "Agents receive word A, Spy receives similar word B".
+    // Since we don't have a "similar word" DB in this simple JSON (likely), 
+    // we will simulate it by reversing the string or just appending "?" for the audit 
+    // OR BETTER: Use another word from the SAME domain as "similar".
+    const similarWordObj = domain.words.find((w: any) => w.word !== wordObj.word) || domain.words[0];
+
     return {
         citizenWord: wordObj.word,
-        infiltratorWord: null // Infiltrator gets no word
+        infiltratorWord: null, // For Infiltrator
+        spyWord: similarWordObj.word // For Spy
     };
 }
 
-export function assignRoles(players: Player[]): Player[] {
+export function assignRoles(players: Player[], mode: 'INFILTRATOR' | 'SPY' = 'INFILTRATOR'): Player[] {
     const shuffled = [...players].sort(() => 0.5 - Math.random());
 
-    // Assign 1 Infiltrator
-    shuffled[0].role = 'INFILTRATOR';
-
-    // Assign rest as Citizens
-    for (let i = 1; i < shuffled.length; i++) {
-        shuffled[i].role = 'CITIZEN';
+    if (mode === 'INFILTRATOR') {
+        shuffled[0].role = 'INFILTRATOR';
+        for (let i = 1; i < shuffled.length; i++) {
+            shuffled[i].role = 'CITIZEN';
+        }
+    } else {
+        shuffled[0].role = 'SPY';
+        for (let i = 1; i < shuffled.length; i++) {
+            shuffled[i].role = 'AGENT';
+        }
     }
 
     return shuffled;

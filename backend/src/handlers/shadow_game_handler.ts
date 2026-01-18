@@ -19,7 +19,7 @@ export function registerShadowGameHandlers(io: Server, socket: Socket) {
             if (timeLeft <= 0) {
                 clearInterval(room.turnTimer as any);
                 room.turnTimer = null;
-                advanceTurn(room);
+                nextTurnOrVote(room);
             }
         }, 1000) as unknown as number;
     };
@@ -126,20 +126,26 @@ export function registerShadowGameHandlers(io: Server, socket: Socket) {
         const players = Array.from(room.players.values());
         const alivePlayers = players.filter(p => p.isAlive);
         const aliveInfiltrator = alivePlayers.find(p => p.role === 'INFILTRATOR');
+        const aliveSpy = alivePlayers.find(p => p.role === 'SPY');
         const aliveCitizens = alivePlayers.filter(p => p.role === 'CITIZEN');
+        // Agents are citizens in Spy mode effectively, but role is 'AGENT'
+        const aliveAgents = alivePlayers.filter(p => p.role === 'AGENT');
 
-        if (!aliveInfiltrator) {
-            // Infiltrator eliminated -> Citizens Win
-            room.winner = 'CITIZEN';
-            room.phase = 'GAME_OVER';
-            io.to(room.id).emit('game_over', { winner: 'CITIZENS', message: 'The Infiltrator has been eliminated!' });
-            return true;
-        }
+        // INFILTRATOR MODE Logic
+        if (aliveInfiltrator || aliveCitizens.length > 0) {
+            // Infiltrator Eliminated
+            if (!aliveInfiltrator && !aliveSpy) {
+                // Check if it was Infiltrator Game
+                if (players.some(p => p.role === 'INFILTRATOR' || p.role === 'CITIZEN')) {
+                    room.winner = 'CITIZEN';
+                    room.phase = 'GAME_OVER';
+                    io.to(room.id).emit('game_over', { winner: 'CITIZENS', message: 'The Infiltrator has been eliminated!' });
+                    return true;
+                }
+            }
 
-        if (aliveCitizens.length <= 1) {
-            // 1 vs 1 (or 0 vs 1) -> Infiltrator Wins (usually needs majority to eliminate, so 1v1 is deadlock/win)
-            // Prompt: "If only two players remain and the special role is still alive -> Special role wins"
-            if (alivePlayers.length <= 2) {
+            // 1 vs 1 Logic for INFILTRATOR
+            if (aliveInfiltrator && aliveCitizens.length <= 1) {
                 room.winner = 'INFILTRATOR';
                 room.phase = 'GAME_OVER';
                 io.to(room.id).emit('game_over', { winner: 'INFILTRATOR', message: 'The Infiltrator survived until the end!' });
@@ -147,10 +153,29 @@ export function registerShadowGameHandlers(io: Server, socket: Socket) {
             }
         }
 
+        // SPY MODE Logic
+        if (aliveSpy || aliveAgents.length > 0) {
+            // Spy Eliminated
+            if (!aliveSpy) {
+                room.winner = 'AGENT'; // Using generic naming or CITIZEN? Let's use AGENT
+                room.phase = 'GAME_OVER';
+                io.to(room.id).emit('game_over', { winner: 'AGENTS', message: 'The Spy has been eliminated!' });
+                return true;
+            }
+
+            // 1 vs 1 Logic for SPY (Spy + 1 Agent = Spy Wins)
+            if (aliveSpy && aliveAgents.length <= 1) {
+                room.winner = 'SPY';
+                room.phase = 'GAME_OVER';
+                io.to(room.id).emit('game_over', { winner: 'SPY', message: 'The Spy survived until the end!' });
+                return true;
+            }
+        }
+
         return false;
     };
 
-    socket.on('start_game', ({ roomCode }) => {
+    socket.on('start_game', ({ roomCode, mode }: { roomCode: string, mode?: 'INFILTRATOR' | 'SPY' }) => {
         const room = shadowStore.getRoom(roomCode);
         if (!room) return;
 
@@ -162,17 +187,24 @@ export function registerShadowGameHandlers(io: Server, socket: Socket) {
             return;
         }
 
+        const selectedMode = mode || 'INFILTRATOR';
+
         // 1. Assign Roles
         const playersList = Array.from(room.players.values());
-        const assignedPlayers = assignRoles(playersList);
+        const assignedPlayers = assignRoles(playersList, selectedMode);
 
         // 2. Get Word
-        const { citizenWord, infiltratorWord } = getRandomWordPair();
+        const { citizenWord, infiltratorWord, spyWord } = getRandomWordPair();
 
         // 3. Distribute info
         assignedPlayers.forEach(p => {
             room.players.set(p.id, p); // Update store
-            p.word = (p.role === 'CITIZEN') ? citizenWord : (infiltratorWord || undefined);
+
+            if (p.role === 'CITIZEN') p.word = citizenWord;
+            else if (p.role === 'INFILTRATOR') p.word = undefined;
+            else if (p.role === 'AGENT') p.word = citizenWord; // Agents get primary word (same as citizenWord logic)
+            else if (p.role === 'SPY') p.word = spyWord;
+
             p.isAlive = true;
             p.votesReceived = 0;
             p.hasVoted = false;

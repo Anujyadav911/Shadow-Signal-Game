@@ -1,4 +1,5 @@
-export type Role = 'CITIZEN' | 'INFILTRATOR';
+export type Role = 'CITIZEN' | 'INFILTRATOR' | 'SPY' | 'AGENT';
+export type GameMode = 'INFILTRATOR' | 'SPY';
 export type GamePhase = 'LOBBY' | 'ASSIGNMENT' | 'SPEAKING' | 'VOTING' | 'ELIMINATION' | 'GAME_OVER';
 
 export interface Player {
@@ -31,7 +32,7 @@ export interface ShadowGameContextProps {
     player: Player | null; // Current user
     createRoom: (username: string) => void;
     joinRoom: (roomCode: string, username: string) => void;
-    startGame: () => void;
+    startGame: (mode?: 'INFILTRATOR' | 'SPY') => void;
     submitVote: (targetId: string) => void;
     error: string | null;
     clearError: () => void;

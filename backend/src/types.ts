@@ -1,4 +1,5 @@
-export type Role = 'CITIZEN' | 'INFILTRATOR';
+export type Role = 'CITIZEN' | 'INFILTRATOR' | 'SPY' | 'AGENT';
+export type GameMode = 'INFILTRATOR' | 'SPY';
 export type GamePhase = 'LOBBY' | 'ASSIGNMENT' | 'SPEAKING' | 'VOTING' | 'ELIMINATION' | 'GAME_OVER';
 
 export interface Player {

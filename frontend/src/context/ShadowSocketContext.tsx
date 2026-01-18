@@ -175,9 +175,9 @@ export const ShadowSocketProvider: React.FC<{ children: React.ReactNode }> = ({ 
         });
     };
 
-    const startGame = () => {
+    const startGame = (mode: 'INFILTRATOR' | 'SPY' = 'INFILTRATOR') => {
         if (!socket || !room) return;
-        socket.emit('start_game', { roomCode: room.id });
+        socket.emit('start_game', { roomCode: room.id, mode });
     };
 
     const submitVote = (targetId: string) => {

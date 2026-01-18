@@ -10,6 +10,7 @@ import { motion } from 'framer-motion';
 export default function LobbyPage() {
     const { room, player, startGame } = useShadowSocket();
     const router = useRouter();
+    const [gameMode, setGameMode] = React.useState<'INFILTRATOR' | 'SPY'>('INFILTRATOR');
 
     useEffect(() => {
         if (!room) {
@@ -66,10 +67,36 @@ export default function LobbyPage() {
                 </div>
 
                 {player.isHost ? (
-                    <div className="space-y-3">
+                    <div className="space-y-4">
+                        <div className="bg-white/5 p-4 rounded-xl border border-white/10">
+                            <label className="text-gray-400 text-xs uppercase tracking-widest font-bold mb-3 block">Game Mode</label>
+                            <div className="grid grid-cols-2 gap-2">
+                                <button
+                                    onClick={() => setGameMode('INFILTRATOR')}
+                                    className={`p-3 rounded-lg border transition-all ${gameMode === 'INFILTRATOR'
+                                        ? 'bg-indigo-600 border-indigo-500 text-white shadow-lg shadow-indigo-900/20'
+                                        : 'bg-white/5 border-transparent text-gray-400 hover:bg-white/10 hover:text-gray-300'
+                                        }`}
+                                >
+                                    <div className="font-bold text-sm mb-1">Infiltrator</div>
+                                    <div className="text-[10px] opacity-70">1 Hidden Infiltrator vs Citizens</div>
+                                </button>
+                                <button
+                                    onClick={() => setGameMode('SPY')}
+                                    className={`p-3 rounded-lg border transition-all ${gameMode === 'SPY'
+                                        ? 'bg-amber-600 border-amber-500 text-white shadow-lg shadow-amber-900/20'
+                                        : 'bg-white/5 border-transparent text-gray-400 hover:bg-white/10 hover:text-gray-300'
+                                        }`}
+                                >
+                                    <div className="font-bold text-sm mb-1">Spy Mode</div>
+                                    <div className="text-[10px] opacity-70">1 Spy (Similar Word) vs Agents</div>
+                                </button>
+                            </div>
+                        </div>
+
                         <ShadowButton
                             className="w-full"
-                            onClick={startGame}
+                            onClick={() => startGame(gameMode)}
                             disabled={room.players.length < 3}
                         >
                             {room.players.length < 3 ? "Need 3 Players" : "Start Game"}

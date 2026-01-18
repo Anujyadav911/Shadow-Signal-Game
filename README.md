@@ -149,4 +149,4 @@ All win conditions are evaluated atomically on the server in `shadow_game_handle
 *   **Connection Handling**: Basic disconnect handling exists, but advanced reconnection strategies (reclaiming same seat after refresh) are minimal for this prototype.
 
 ---
-*Verified for "Assignment Completion Checklist" - January 2026*
+*Verified for "Completion Checklist" - January 2026*

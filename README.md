@@ -20,6 +20,54 @@ This project is designed to evaluate **Realtime System Architecture**, **State M
 -   **Language**: TypeScript
 -   **State Store**: In-Memory (Map-based)
 
+### 📂 Project Structure
+
+```
+backend/
+├── src/
+│   ├── data/
+│   │   └── shadow_words.json
+│   ├── handlers/
+│   │   ├── shadow_game_handler.ts
+│   │   └── shadow_room_handler.ts
+│   ├── store/
+│   │   └── shadow_store.ts
+│   ├── utils/
+│   │   └── shadow_utils.ts
+│   ├── server.ts
+│   └── types.ts
+├── package.json
+└── tsconfig.json
+
+frontend/
+├── public/
+├── src/
+│   ├── app/
+│   │   ├── game/
+│   │   │   └── page.tsx
+│   │   ├── lobby/
+│   │   │   └── page.tsx
+│   │   ├── results/
+│   │   │   └── page.tsx
+│   │   ├── globals.css
+│   │   ├── layout.tsx
+│   │   └── page.tsx
+│   ├── components/
+│   │   ├── GameTimer.tsx
+│   │   ├── GhibliButton.tsx
+│   │   ├── ParticleBackground.tsx
+│   │   ├── PlayerAvatar.tsx
+│   │   ├── ShadowButton.tsx
+│   │   └── ShadowInput.tsx
+│   ├── context/
+│   │   └── ShadowSocketContext.tsx
+│   └── types/
+│       └── shadow_types.ts
+├── package.json
+├── tailwind.config.ts
+└── tsconfig.json
+```
+
 ---
 
 ## 🎮 Game Modes

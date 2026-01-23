@@ -70,9 +70,9 @@ export const ShadowSocketProvider: React.FC<{ children: React.ReactNode }> = ({ 
             }
         });
 
-        newSocket.on('game_started', (data: { role: any, word: string }) => {
+        newSocket.on('game_started', (data: { role: any, word: string, team: any }) => {
             setRoom(prev => prev ? ({ ...prev, phase: 'SPEAKING' }) : null);
-            setPlayer(prev => prev ? ({ ...prev, role: data.role, word: data.word }) : null);
+            setPlayer(prev => prev ? ({ ...prev, role: data.role, word: data.word, team: data.team }) : null);
         });
 
         newSocket.on('turn_update', (data: { player: Player, round: number }) => {
@@ -95,8 +95,8 @@ export const ShadowSocketProvider: React.FC<{ children: React.ReactNode }> = ({ 
             setRoom(prev => prev ? ({ ...prev, phase: data.phase }) : null);
         });
 
-        newSocket.on('game_over', (data: { winner: any }) => {
-            setRoom(prev => prev ? ({ ...prev, phase: 'GAME_OVER', winner: data.winner }) : null);
+        newSocket.on('game_over', (data: { winner: any, winningTeam: any }) => {
+            setRoom(prev => prev ? ({ ...prev, phase: 'GAME_OVER', winner: data.winner, winningTeam: data.winningTeam }) : null);
         });
 
         newSocket.on('vote_update', () => {

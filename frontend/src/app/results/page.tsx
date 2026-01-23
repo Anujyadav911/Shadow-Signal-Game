@@ -19,7 +19,10 @@ export default function ResultsPage() {
 
     if (!room || !player) return null;
 
-    const isWin = (room.winner === 'CITIZEN' && player.role === 'CITIZEN') ||
+    // Use explicit team win logic if available (Spy Mode Fix)
+    const isWin = room.winningTeam
+        ? player.team === room.winningTeam
+        : (room.winner === 'CITIZEN' && player.role === 'CITIZEN') ||
         (room.winner === 'INFILTRATOR' && player.role === 'INFILTRATOR');
 
     return (

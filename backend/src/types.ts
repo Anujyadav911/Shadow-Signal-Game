@@ -11,6 +11,7 @@ export interface Player {
     isAlive: boolean;
     hasVoted: boolean;
     votesReceived: number;
+    team?: 'SPY' | 'AGENTS' | 'CITIZENS' | 'INFILTRATOR'; // Explicit team assignment
 }
 
 export interface Room {
@@ -21,5 +22,6 @@ export interface Room {
     turnTimer: number | null; // Seconds remaining
     roundNumber: number;
     winner?: Role | 'DRAW';
+    winningTeam?: 'SPY' | 'AGENTS' | 'CITIZENS' | 'INFILTRATOR'; // Team that won
     wordCategory?: string; // For display
 }

@@ -11,6 +11,7 @@ export interface Player {
     isAlive: boolean;
     hasVoted: boolean;
     votesReceived: number;
+    team?: 'SPY' | 'AGENTS' | 'CITIZENS' | 'INFILTRATOR';
 }
 
 export interface Room {
@@ -21,6 +22,7 @@ export interface Room {
     turnTimer: number | null;
     roundNumber: number;
     winner?: Role | 'DRAW';
+    winningTeam?: 'SPY' | 'AGENTS' | 'CITIZENS' | 'INFILTRATOR';
     wordCategory?: string;
     hostId?: string; // Helper to easily identify host
 }

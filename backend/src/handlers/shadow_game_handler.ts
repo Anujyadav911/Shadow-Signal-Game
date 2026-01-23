@@ -135,10 +135,15 @@ export function registerShadowGameHandlers(io: Server, socket: Socket) {
             // Infiltrator Eliminated -> Citizens Win
             if (!aliveInfiltrator) {
                 room.winner = 'CITIZEN';
+                room.winningTeam = 'CITIZENS';
                 room.phase = 'GAME_OVER';
                 // Emit singular 'CITIZEN' so frontend logic (winner === 'CITIZEN') matches.
                 // Frontend appends 'S', so 'CITIZENS WIN'.
-                io.to(room.id).emit('game_over', { winner: 'CITIZEN', message: 'The Infiltrator has been eliminated!' });
+                io.to(room.id).emit('game_over', {
+                    winner: 'CITIZEN',
+                    winningTeam: 'CITIZENS',
+                    message: 'The Infiltrator has been eliminated!'
+                });
                 return true;
             }
 
@@ -146,8 +151,13 @@ export function registerShadowGameHandlers(io: Server, socket: Socket) {
             // If Infiltrator is alive and only 1 (or 0) Citizen remains (Total <= 2)
             if (aliveInfiltrator && aliveCitizens.length <= 1) {
                 room.winner = 'INFILTRATOR';
+                room.winningTeam = 'INFILTRATOR';
                 room.phase = 'GAME_OVER';
-                io.to(room.id).emit('game_over', { winner: 'INFILTRATOR', message: 'The Infiltrator survived until the end!' });
+                io.to(room.id).emit('game_over', {
+                    winner: 'INFILTRATOR',
+                    winningTeam: 'INFILTRATOR',
+                    message: 'The Infiltrator survived until the end!'
+                });
                 return true;
             }
         }
@@ -157,8 +167,13 @@ export function registerShadowGameHandlers(io: Server, socket: Socket) {
             // Spy Eliminated -> Agents Win
             if (!aliveSpy) {
                 room.winner = 'AGENT';
+                room.winningTeam = 'AGENTS';
                 room.phase = 'GAME_OVER';
-                io.to(room.id).emit('game_over', { winner: 'AGENT', message: 'The Spy has been eliminated!' });
+                io.to(room.id).emit('game_over', {
+                    winner: 'AGENT',
+                    winningTeam: 'AGENTS',
+                    message: 'The Spy has been eliminated!'
+                });
                 return true;
             }
 
@@ -166,8 +181,13 @@ export function registerShadowGameHandlers(io: Server, socket: Socket) {
             // If Spy is alive and only 1 Agent remains (Total <= 2)
             if (aliveSpy && aliveAgents.length <= 1) {
                 room.winner = 'SPY';
+                room.winningTeam = 'SPY';
                 room.phase = 'GAME_OVER';
-                io.to(room.id).emit('game_over', { winner: 'SPY', message: 'The Spy survived until the end!' });
+                io.to(room.id).emit('game_over', {
+                    winner: 'SPY',
+                    winningTeam: 'SPY',
+                    message: 'The Spy survived until the end!'
+                });
                 return true;
             }
         }
@@ -200,10 +220,22 @@ export function registerShadowGameHandlers(io: Server, socket: Socket) {
         assignedPlayers.forEach(p => {
             room.players.set(p.id, p); // Update store
 
-            if (p.role === 'CITIZEN') p.word = citizenWord;
-            else if (p.role === 'INFILTRATOR') p.word = undefined;
-            else if (p.role === 'AGENT') p.word = citizenWord; // Agents get primary word (same as citizenWord logic)
-            else if (p.role === 'SPY') p.word = spyWord;
+            if (p.role === 'CITIZEN') {
+                p.word = citizenWord;
+                p.team = 'CITIZENS';
+            }
+            else if (p.role === 'INFILTRATOR') {
+                p.word = undefined;
+                p.team = 'INFILTRATOR';
+            }
+            else if (p.role === 'AGENT') {
+                p.word = citizenWord;
+                p.team = 'AGENTS';
+            }
+            else if (p.role === 'SPY') {
+                p.word = spyWord;
+                p.team = 'SPY';
+            }
 
             p.isAlive = true;
             p.votesReceived = 0;
@@ -212,7 +244,8 @@ export function registerShadowGameHandlers(io: Server, socket: Socket) {
             // Emit private info
             io.to(p.id).emit('game_started', {
                 role: p.role,
-                word: p.word
+                word: p.word,
+                team: p.team
             });
         });
 
